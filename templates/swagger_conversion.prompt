@@ -1,0 +1,14 @@
+Generate a Swagger (OpenAPI) definition from the JSON below, based on the following json paths:
+
+```
+path: $.url
+description: $.description
+http method: $.httpMethod
+path parameters: $.routeJson.cells[0].api_express_properties.property[?(@.path == 'pathParams')]['@value']['@name']
+```
+
+The Swagger definition should be in YAML format.
+
+```json
+{{json}}
+```

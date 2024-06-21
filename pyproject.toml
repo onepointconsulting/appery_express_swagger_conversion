@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "swagger-conversion"
+version = "0.1.0"
+description = "Converts an Apery API Export to Swagger"
+authors = ["Gil Fernandes <gil.fernandes@onepointltd.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+openai = "^1.35.1"
+python-dotenv = "^1.0.1"
+jinja2 = "^3.1.4"
+click = "^8.1.7"
+
+[tool.poetry.group.dev.dependencies]
+black = "24.4.0"
+ruff = "^0.4.9"
+pytest = "^8.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
