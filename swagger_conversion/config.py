@@ -24,5 +24,13 @@ class Config:
     template_dir = os.getenv("TEMPLATE_DIR")
     assert template_dir is not None, "Template directory was not defined."
 
+    anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+    # This is optional
+    anthropic_model = os.getenv("ANTHROPIC_MODEL")
+    if anthropic_api_key is not None:
+        assert (
+            anthropic_model is not None
+        ), "The Anthropic model needs to exist if there is a key"
+
 
 cfg = Config()

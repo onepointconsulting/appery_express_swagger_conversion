@@ -4,25 +4,10 @@ from httpx import Timeout
 
 from swagger_conversion.config import cfg
 from swagger_conversion.model.message_container import MessageContainer
+from swagger_conversion.llm.base_client import BaseClient
 
 
-class OpenAIClient:
-
-    def __init__(
-        self,
-        *,
-        stream_handler: Optional[Callable] = None,
-        error_handler: Optional[Callable] = None,
-    ):
-        """
-        Initialize the client with the given configuration.
-
-        :param config: Configuration for the client.
-        :param stream_handler: Optional handler for streamed responses.
-        """
-        self.stream_handler = stream_handler
-        self.error_handler = error_handler
-        self._init_client()
+class OpenAIClient(BaseClient):
 
     def _init_client(self):
         connect_timeout = cfg.connect_timeout
@@ -41,7 +26,7 @@ class OpenAIClient:
         convo: MessageContainer,
         json_mode: bool = False,
         functions: Optional[List[Dict]] = None,
-        function_call: Optional[str] = "auto"
+        function_call: Optional[str] = "auto",
     ) -> tuple[str, int, int]:
         completion_kwargs = {
             "model": cfg.openai_api_model,
