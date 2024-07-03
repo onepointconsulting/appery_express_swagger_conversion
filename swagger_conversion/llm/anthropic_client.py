@@ -12,6 +12,7 @@ from swagger_conversion.model.message_container import MessageContainer
 # Maximum number of tokens supported by Anthropic Claude 3
 MAX_TOKENS = 4096
 
+
 class AnthropicClient(BaseClient):
 
     def _init_client(self):
@@ -41,7 +42,9 @@ class AnthropicClient(BaseClient):
         messages = []
         for msg in convo.messages:
             if msg["role"] == "function":
-                raise ValueError("Anthropic Claude doesn't support function calling, but it supports tools")
+                raise ValueError(
+                    "Anthropic Claude doesn't support function calling, but it supports tools"
+                )
 
             role = "user" if msg["role"] in ["user", "system"] else "assistant"
             if messages and messages[-1]["role"] == role:
@@ -54,7 +57,6 @@ class AnthropicClient(BaseClient):
                     }
                 )
         return messages
-
 
     async def make_request(
         self,
@@ -89,4 +91,8 @@ class AnthropicClient(BaseClient):
         if self.stream_handler:
             await self.stream_handler(None)
 
-        return response_str, final_message.usage.input_tokens, final_message.usage.output_tokens
+        return (
+            response_str,
+            final_message.usage.input_tokens,
+            final_message.usage.output_tokens,
+        )

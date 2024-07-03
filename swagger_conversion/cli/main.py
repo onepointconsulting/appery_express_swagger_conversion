@@ -12,6 +12,7 @@ from swagger_conversion.templates.renderer import Renderer
 from swagger_conversion.model.function_description import (
     function_description_swagger_result,
 )
+from swagger_conversion.swagger.validate_schema import validate_schema
 from swagger_conversion.config import cfg
 from swagger_conversion.log_init import logger
 
@@ -73,14 +74,7 @@ def swagger_conversion(type: str, location: str, target_folder: str):
                         )
                     )
                     json_response = json.loads(response[0])
-                    description = json_response["description"]
-                    (target_folder_path / f"swagger_{i}.yaml").write_text(
-                        json_response["swagger_definition"]
-                    )
-                    (target_folder_path / f"swagger_{i}_description.txt").write_text(
-                        description
-                    )
-                    logger.info(f"Generated service nr. {i}: {description}")
+                    serialize_response(json_response, target_folder_path, i)
                 except Exception as e:
                     logger.exception(f"Cannot process {i} definition.")
 
@@ -88,6 +82,21 @@ def swagger_conversion(type: str, location: str, target_folder: str):
             click.echo(
                 f"Unrecognized type {type}. Please use one of {GenType.TYPE_SWAGGER}"
             )
+
+
+def serialize_response(json_response: dict, target_folder_path: Path, i: int):
+    description = json_response.get("description", "Missing description.")
+    folder = target_folder_path / f"swagger_{i}"
+    folder.mkdir(exist_ok=True)
+    swagger_definition_file = folder / f"swagger_{i}.yaml"
+    swagger_definition_file.write_text(json_response["swagger_definition"])
+    (folder / f"swagger_{i}_description.txt").write_text(description)
+    extracted_schema = validate_schema(swagger_definition_file)
+    if isinstance(extracted_schema, Exception):
+        logger.warn(f"{swagger_definition_file} could not be validated.")
+        (folder / f"swagger_{i}_error.txt").write_text(str(extracted_schema))
+    else:
+        logger.info(f"Generated service nr. {i}: {description}")
 
 
 if __name__ == "__main__":
